@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Настройки</title>
+        <link rel="stylesheet" href="css/style.css" />
+        <script src="js/setting.js"></script>
+    </head>
+    <body>
+        <div id="wrraper">
+            <label for="select">Профиль</label>
+            <select id="select" onchange="onEvent();">
+                <option id="0" name="11">Создать новый</option>
+                <option id="1" name="1" selected>Mart 2016</option>
+                <option id="3" name="2">Oprel 2016</option>
+                <option id="4" name="3">Iyune 2016</option>
+                <option id="5" name="4">Avgust 2016</option>
+            </select>
+            <div id="add_profile">
+                <input type="text" name="test" size="20" placeholder="Профиль">
+                <button class="button_main button_new" type="button" onclick="">Добавить</button>
+            </div>
+        </div>
+        <div id="park_count_block">
+            <label for="park_count">Общие количество парков:</label>
+            <span id="park_count"></span>
+            <br />
+            <label for="park_total_sum">Общия сумма:</label>
+            <span id="park_total_sum">50000</span> cум.
+        </div>
+        <h3>Таксопарки</h3>
+            <ol id="taxi_park_list" type="1">
+                <!-- This magic -->
+            </ol>
+        
+        <button class="button_main button_add" type="button" onclick="addForm();">+</button>
+        <div class="button position">
+           <input class="button_main submit" type="submit" value="Cохранить"> 
+        </div>
+    </body>
+</html>
