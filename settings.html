@@ -3,21 +3,21 @@
     <head>
         <title>Настройки</title>
         <link rel="stylesheet" href="css/style.css" />
+        <script src="js/utils.js"></script>
+        <script src="js/storage.js"></script>
+        <script src="database/ajax_database.js"></script>
         <script src="js/setting.js"></script>
     </head>
     <body>
         <div id="wrraper">
             <label for="select">Профиль</label>
             <select id="select" onchange="onEvent();">
-                <option id="0" name="11">Создать новый</option>
-                <option id="1" name="1" selected>Mart 2016</option>
-                <option id="3" name="2">Oprel 2016</option>
-                <option id="4" name="3">Iyune 2016</option>
-                <option id="5" name="4">Avgust 2016</option>
+                <option id="new" name="11">Создать новый</option>
+                <!-- This magic -->
             </select>
             <div id="add_profile">
-                <input type="text" name="test" size="20" placeholder="Профиль">
-                <button class="button_main button_new" type="button" onclick="">Добавить</button>
+                <input type="text" name="profile_name" size="20" placeholder="Профиль">
+                <button class="button_main button_new" type="button" onclick="createProfile();">Добавить</button>
             </div>
         </div>
         <div id="park_count_block">
@@ -25,16 +25,21 @@
             <span id="park_count"></span>
             <br />
             <label for="park_total_sum">Общия сумма:</label>
-            <span id="park_total_sum">50000</span> cум.
+            <span id="park_total_sum">0</span> cум.
         </div>
         <h3>Таксопарки</h3>
+        <ul id="lable_list">
+            <li>Название таксопарка</li>
+            <li>Сумма</li>
+            <li>Процент</li>
+        </ul>
             <ol id="taxi_park_list" type="1">
                 <!-- This magic -->
             </ol>
         
         <button class="button_main button_add" type="button" onclick="addForm();">+</button>
         <div class="button position">
-           <input class="button_main submit" type="submit" value="Cохранить"> 
+          <a href="/" class="button_main submit">Вернуться</a> <input class="button_main submit" type="submit" onclick="saveProfile();" value="Cохранить"> 
         </div>
     </body>
 </html>

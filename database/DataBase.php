@@ -23,10 +23,10 @@ class DataBase {
     public function __construct($file = null)
     {
         if (is_null($file)) {
-            $file = self::$database;
+            self::$database = getcwd() . DIRECTORY_SEPARATOR . self::$database;
         }
         
-        if (!file_exists($file)) {
+        if (!file_exists(self::$database)) {
             throw new Exception('Database not initialized');
         }
         $this->load();
@@ -56,7 +56,6 @@ class DataBase {
 
         $resurce = (file_exists(self::$database) === false) ? fopen($file, 'w') : false; 
         if ($resurce) {
-            fclose($resurce);
             $result = true;
         }
         return $result;

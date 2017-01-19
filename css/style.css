@@ -53,6 +53,14 @@ body {
     padding-bottom: 5px;
 }
 
+.button a {
+    text-decoration: none;
+    font: 13.3333px Arial;
+    font-weight: bold;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
 .button_main {
     background-color: #68b12f;
     background: -webkit-gradient(linear, left top, left bottom, from(#68b12f), to(#50911e));
@@ -166,4 +174,20 @@ body {
 
 #add_profile {
     display: none;
+}
+
+#lable_list {
+    margin-bottom: -10px;
+}
+
+#lable_list li {
+    display: inline;
+}
+
+#lable_list li:first-child {
+    margin-right: 70px;
+}
+
+#lable_list li:last-child {
+    margin-left: 105px;
 }
