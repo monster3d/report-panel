@@ -1,0 +1,13 @@
+{
+    "name": "mytaxi/report-panel",
+    "description": "simple report panel",
+    "require": {
+        "mashape/unirest-php": "3.0.4"
+    },
+    "authors": [
+        {
+            "name": "Monster3D",
+            "email": "monster3d@mail.ru"
+        }
+    ]
+}
