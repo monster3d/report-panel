@@ -103,7 +103,7 @@ body {
 
 
 
-.taxi_company ul li, .taxi_parks ul li {
+.taxi_company ol li, .taxi_parks ul li {
     border: 1px solid #20911e;
     clear: both;
     display: block;
@@ -111,7 +111,7 @@ body {
     padding: 2px;
 }
 
-.taxi_parks ul li span {
+.taxi_parks ol li span {
     border-left: 1px solid #20911e;
     padding-left: 10px;
     padding-top: 2px;
@@ -120,7 +120,7 @@ body {
     margin-left: -3px;
 }
 
-.taxi_company ul li span {
+.taxi_company ol li span {
     padding-left: 5px;
 }
 
@@ -168,7 +168,7 @@ body {
 
 .position {
     float: right;
-    margin-top: -7px;
+    margin-top: -23px;
     margin-right: -3px;
 }
 
@@ -176,18 +176,33 @@ body {
     display: none;
 }
 
-#lable_list {
+#label_list {
+    opacity: 0;
+    transition: 2s;
     margin-bottom: -10px;
 }
 
-#lable_list li {
+#label_list li {
     display: inline;
 }
 
-#lable_list li:first-child {
+#label_list li:first-child {
     margin-right: 70px;
 }
 
-#lable_list li:last-child {
+#label_list li:last-child {
     margin-left: 105px;
+}
+
+#message {
+    position: absolute;
+    left: 0px;
+    top: 50px;
+    width: 100%;
+    font-size: 28pt;
+    opacity: 0;
+    text-align: center;
+    transition: 2s;
+    color: blue;
+    text-shadow: 1px 1px #000;
 }
