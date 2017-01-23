@@ -7,6 +7,7 @@
         <script src="js/storage.js"></script>
         <script src="database/ajax_database.js"></script>
         <script src="js/setting.js"></script>
+        <script src="backend/ajax_repository.js"></script>
     </head>
     <body>
         <div id="wrraper">
@@ -19,6 +20,9 @@
                 <input type="text" name="profile_name" size="20" placeholder="Профиль">
                 <button class="button_main button_new" type="button" onclick="createProfile();">Добавить</button>
             </div>
+            <div id="message">
+                <!-- This magic -->
+            </div>
         </div>
         <div id="park_count_block">
             <label for="park_count">Общие количество парков:</label>
@@ -27,8 +31,15 @@
             <label for="park_total_sum">Общия сумма:</label>
             <span id="park_total_sum">0</span> cум.
         </div>
+        <h3>Дата</h3>
+         <div class="subform">
+            <lable for="from">От</lable>
+            <input id="from" type="text" pattern="^[0-9]{4}-[0-9]{2}$" name="from" value=""  placeholder="YYYY-MM">
+            <label for="to">До</label>
+            <input id="to" type="text" pattern="^[0-9]{4}-[0-9]{2}$" name="to" value=""  placeholder="YYYY-MM">
+        </div>
         <h3>Таксопарки</h3>
-        <ul id="lable_list">
+        <ul id="label_list">
             <li>Название таксопарка</li>
             <li>Сумма</li>
             <li>Процент</li>
@@ -38,6 +49,13 @@
             </ol>
         
         <button class="button_main button_add" type="button" onclick="addForm();">+</button>
+         <div class="taxi_company">
+            <h3>Список компаний</h3>
+            <ol id="company_list" type="1">
+                <!-- This magic -->
+            </ol>
+            <button id="get_company" class="button_main submit" type="button" onclick="getCompany();">Получить</button>
+        </div>
         <div class="button position">
           <a href="/" class="button_main submit">Вернуться</a> <input class="button_main submit" type="submit" onclick="saveProfile();" value="Cохранить"> 
         </div>

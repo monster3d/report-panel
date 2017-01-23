@@ -16,7 +16,7 @@ function getProfileById(id)
     if (data === null) {
         data = [];
     }
-    data.map(function(value, key) {
+    data.map((value, key)=> {
         if (value.id === parseInt(id)) {
             result = value;
         }
@@ -39,7 +39,7 @@ function setProfileById(id, profile)
     if (data === null) {
         data = [];
     }
-    data.map(function(value, key) {
+    data.map((value, key)=> {
         if (value.id === parseInt(id)) {
             data[parseInt(key)] = profile;
         }
@@ -94,6 +94,5 @@ function setDataToStorage(data)
     let string = JSON.stringify(data);
     localStorage.setItem('profile_data', string);
     dbSync(true);
-    window.alert('Профиль успешно сохранен!');
 }
 

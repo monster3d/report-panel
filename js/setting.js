@@ -16,6 +16,7 @@ let docReady = setInterval(function () {
  */
 function addForm(data = null, id = 0) 
 {
+    
     let name = "";
     let sum  = "";
     let prec = "";
@@ -23,10 +24,12 @@ function addForm(data = null, id = 0)
     let current = select.options[select.selectedIndex].id;  
 
     if (current == "new") {
-        window.alert("Сперва создайте профиль!");
+        showMessage("Сперва создайте профиль!");
         return;
     }
 
+    document.getElementById('label_list').style.opacity = 1.0;
+    
     if (id == 0) {
         formId = getRandom();
     } else {
@@ -107,11 +110,15 @@ function addForm(data = null, id = 0)
 function removeForm(id)
 {
     let li = document.getElementById(id);
+    let countList = document.getElementById('taxi_park_list').childElementCount;
     li.style.fontWeight = "bold";
-    window.setTimeout(function() {
+    window.setTimeout(()=> {
          li.remove(); 
-        setCountPark(document.getElementById('taxi_park_list').childElementCount);
+        setCountPark(countList);
         getCurrentValue();
+        if (countList === 1) {
+            document.getElementById('label_list').style.opacity = 0;
+        }
     }, 500);
     delete Object.li;
 }
@@ -126,7 +133,7 @@ function removeForm(id)
 function createElement(element, settings)
 {
     let elementObject = document.createElement(element);
-    Object.keys(settings).map(function(key, index) {
+    Object.keys(settings).map((key, index)=> {
         elementObject.setAttribute(key, settings[key]);
     });
 
@@ -147,23 +154,30 @@ function setCountPark(count = 0)
 
 function onEvent()
 {
+    clearCompanyList();
     document.getElementById('taxi_park_list').innerHTML = "";
     let select = document.getElementById('select');
     let current = select.options[select.selectedIndex].id;   
     let newParkForm = document.getElementById('add_profile');
+    let from = document.getElementById('from');
+    let to = document.getElementById('to');
     let data = [];
 
     if (current == 'new') {
         newParkForm.style.display = "inline";
         setCountPark(0);
         setSumPark(0);
+        to.value = "";
+        from.value = "";
     } else {
         newParkForm.style.display = "none";
     }
     data = getDataFromStorage(); 
-    Object.keys(data).map(function(key, index) {
+    Object.keys(data).map((key, index)=> {
         if (data[parseInt(key)].id == parseInt(current)) {
-            Object.keys(data[parseInt(key)].data).map(function(value, index) {
+            from.value = data[parseInt(key)].from;
+            to.value = data[parseInt(key)].to;
+            Object.keys(data[parseInt(key)].data).map((value, index)=> {
                 let formDataSettings = {
                     "name": data[parseInt(key)].data[parseInt(value)].name,
                     "sum": data[parseInt(key)].data[parseInt(value)].sum,
@@ -173,8 +187,41 @@ function onEvent()
             })
         }
     });
+
+    Object.keys(data).map((key, index)=> {
+       if (data[parseInt(key)].id == parseInt(current)) {
+           data[parseInt(key)].company.map((value, key)=> {
+               createCheckBox(value.id, value.title, value.checked);
+           });
+       }
+    });
     getCurrentValue();
     delete Object.newParkForm, Object.select, Object.current;
+}
+
+/**
+ * Функция отслеживает событие чекбокса
+ * 
+ * @param {int} id
+ * 
+ */
+function checkBoxEvent(id)
+{
+    let checkbox_id, list_id;
+    checkbox_id = id;
+    list_id     = `list_${id}`;
+  
+    if (document.getElementById(checkbox_id).checked) {
+        document.getElementById(list_id).style.opacity = 1.0; 
+    } else {
+        document.getElementById(list_id).style.opacity = 0.2;
+    }
+    refreshCountCompany();
+}
+
+function refreshCountCompany()
+{
+    //document.getElementById('company').innerHTML = getTotalCountCompanyList();
 }
 
 /**
@@ -223,7 +270,7 @@ function getCurrentState()
         data = getDataFromStorage(); 
     let select = document.getElementById('select');
 
-     Object.keys(data).map(function(key, index) {
+     Object.keys(data).map((key, index)=> {
          let option = document.createElement('option');
          option.setAttribute('id', data[parseInt(key)].id);
          option.setAttribute('name', data[parseInt(key)].name);
@@ -237,8 +284,8 @@ function getCurrentState()
      } else {
          select.lastChild.setAttribute('selected', 'select');
      }
-        onEvent();
-        getCurrentValue();
+     onEvent();
+     getCurrentValue();
 }
 
 /**
@@ -257,10 +304,10 @@ function saveProfile()
     let parks = [];
 
     if (inputNodes.length === 0) {
-        window.alert('Нужно добавить хоть один таксопарк!');
+        showMessage('Нужно добавить хоть один таксопарк!');
         return;
     }
-    Object.keys(inputNodes).map(function(key, index) {
+    Object.keys(inputNodes).map((key, index)=> {
         let park = inputNodes[parseInt(key)];
         let forms = park.getElementsByTagName('input');
         let data = {
@@ -272,7 +319,9 @@ function saveProfile()
         parks.push(data);
     });
     addNewTaxiParkToProfile(current.id, parks);
+    addNewTaxiCompanyToProfile(current.id, getCheckBox());
     delete Object.parks, Object.park, Object.forms;
+    showMessage('Профиль успешно сохранен!');
 }
 
 /**
@@ -285,15 +334,17 @@ function createProfile()
     let input = document.getElementById('add_profile').getElementsByTagName('input');
     let select = document.getElementById('select');
     let newOption = document.createElement('option');
+    let from = document.getElementById('from').value;
+    let to = document.getElementById('to').value;
     let profileName = input[0].value;
     let data = [], id = getRandom();
 
     if (profileName == "") {
-        window.alert("Введите имя профиля");
+        showMessage("Введите имя профиля");
         return;
     }
 
-    createNewProfile(id, profileName);
+    createNewProfile(id, profileName, from, to);
 
     newOption.innerHTML = profileName;
     newOption.setAttribute('selected', 'select');
@@ -307,15 +358,20 @@ function createProfile()
  * Создает новый профиль
  * 
  * @param {int} id
- * @param {string} name 
+ * @param {string} name
+ * @param {string} from
+ * @param {string} to 
  * 
  */
-function createNewProfile(id, name)
+function createNewProfile(id, name, from, to)
 {
     let data = {
         "id": id,
         "name": name,
-        "data": []
+        "from": from,
+        "to": to,
+        "data": [],
+        "company": []
     };
     addNewToStorage(data);
 }
@@ -342,3 +398,69 @@ function addNewTaxiParkToProfile(id, parks)
     return result;
 }
 
+function addNewTaxiCompanyToProfile(id, company)
+{
+    let result = false;
+    let profile = getProfileById(id);
+    if (profile !== null) {
+        result = true;
+        profile.company = company;
+        setProfileById(id, profile);
+    }
+    return result;
+}
+
+function getCheckBox()
+{
+    let data = [];
+    let status = {};
+    let ul = document.getElementById('company_list');
+    Object.keys(ul.childNodes).map((key, index)=> {
+        let input = ul.childNodes[parseInt(key)].getElementsByTagName('input');
+        let span = ul.childNodes[parseInt(key)].getElementsByTagName('span');
+            status = {
+                'id': input[0].id,
+                'checked': input[0].checked,
+                'title': span[0].innerHTML
+            }
+        data.push(status);
+    })
+    return data;
+}
+
+/**
+ * Создает лист компании
+ *
+ * @param {int} id
+ * @param {string} title
+ * @param {boolean} checked
+ * 
+ */
+function createCheckBox(id, title, checked)
+{
+        let ul = document.getElementById('company_list');
+        let li = createElement('li', {'id': `list_${id}`});
+        let div = createElement('div', {'class': 'check-box'});        
+        let span = createElement('span', {'id': `title_${id}`});
+        let input;
+        span.innerHTML = title;
+
+        if (checked) {
+            input = createElement('input', {
+                'id': id, 'type': 'checkbox',
+                'onclick': `checkBoxEvent(${id})`,
+                'checked': '' 
+        });
+        } else {
+            input = createElement('input', {
+                'id': id, 'type': 'checkbox',
+                'onclick': `checkBoxEvent(${id})`
+            });
+            li.style.opacity = 0.2;
+        }
+
+    div.appendChild(input);
+    li.appendChild(div);
+    li.appendChild(span);
+    ul.appendChild(li);
+}
