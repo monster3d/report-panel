@@ -1,10 +1,10 @@
 "use strict"
 
-const httpEngine = new XMLHttpRequest()
+const httpEngineDb = new XMLHttpRequest()
 
-httpEngine.onreadystatechange = function() { 
-        if (httpEngine.readyState == 4 && httpEngine.status == 200)
-           handler(httpEngine.responseText);
+httpEngineDb.onreadystatechange = ()=> { 
+        if (httpEngineDb.readyState == 4 && httpEngineDb.status == 200)
+           handler(httpEngineDb.responseText);
     }
 
 /**
@@ -19,12 +19,12 @@ function dbSync(set = false)
     let data = localStorage.getItem('profile_data');
     if (set === false) {
         let urlRequest = 'database/main.php?action=get&data=null&key=profile_data';
-        httpEngine.open("GET", urlRequest, true);
-        httpEngine.send();
+        httpEngineDb.open("GET", urlRequest, true);
+        httpEngineDb.send();
     } else {
         let urlRequest = `database/main.php?action=set&data=${data}&key=profile_data`;
-        httpEngine.open("GET", urlRequest, true);
-        httpEngine.send();
+        httpEngineDb.open("GET", urlRequest, true);
+        httpEngineDb.send();
     }
 }
 
