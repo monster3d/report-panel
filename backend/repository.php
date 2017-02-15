@@ -6,6 +6,8 @@ $baseStruct = [
     'type' => null
 ];
 
+$config = parse_ini_file(__DIR__ . "/config.ini", true);
+
 $parser = function($baseStruct) use($_GET) {
     $baseStruct['type'] = $_GET['type'];
     unset($_GET);
@@ -16,28 +18,39 @@ $baseStruct = $parser($baseStruct);
 
 switch($baseStruct['type']) {
     case "company":
-        $urlRequest = "http://www.mocky.io/v2/58859b7e0f0000032bff658b";
+        $urlRequest = sprintf("%s/v1/corporate-companies/", $config['urls']['core']);
+        $headers = ['Authorization' => $config['core_api']['auth']];
 }
 
-$result = Unirest\Request::get($urlRequest);
-echo $result->raw_body;
+$result = Unirest\Request::get($urlRequest, $headers);
 
+if ($result instanceof \stdClass || $result->code !== 200) {
+	print_r($result);
+}
 
-/**
-$mock = [
-    0 => [
-        'id' => 10,
-        'title' => "test name"
-    ],
-    1 => [
-        'id' => 55,
-        'title' => "mega company"
-    ],
-    2 => [
-        'id' => 454,
-        'title' => "sdfsdfsdfsdf"
-    ]
-];
+$data = json_decode($result->raw_body, true);
 
-echo json_encode($mock);
-*/
+if ($data['status'] !== 'success') {
+
+}
+
+$pages = $data['data']['pagination'];
+
+if ($pages['total_pages'] > 1) {
+    $i = $pages['page'];
+    $tempResult = [];
+    while ($i < $pages['total_pages']) {
+        $i++;
+        $urlRequest = sprintf("%s?page=%s", $urlRequest, $i);
+        $pageResult = Unirest\Request::get($urlRequest, $headers);
+        $tempResult = array_merge($data['data']['objects'], json_decode($pageResult->raw_body, true)['data']['objects']);
+    }
+}
+
+$totalResult = array_values(array_filter(array_map(function(&$array) {
+    if (!$array['is_blocked']) {
+        return $array;
+    }
+}, $tempResult)));
+
+echo json_encode($totalResult);
