@@ -1,4 +1,6 @@
 ### database ###
 
-/database/database.db
 /vendor/
+backend/__pycache__
+downloads/*.xlsx
+logs/*
