@@ -1,8 +1,0 @@
-<?php
-
-/*
-* Config
-*
-*/
-
-return [];
