@@ -50,6 +50,7 @@ $serviceResult = Unirest\Request::get($urlRequest);
 
 if ($serviceResult instanceof \stdClass || $serviceResult->code !== 200) {
 	print_r($serviceResult);
+	exit();
 }
 
 $billingResult = json_decode($serviceResult->raw_body, true);
@@ -66,16 +67,18 @@ $filter = array_values(array_filter(array_map(
 			return $array;
 		}
 	}, $profileData['company'])));
-echo "<pre>";
-print_r($billingResult);
-exit();
-$resultData = array_map(function($array) use($filter) {
+$resultData = array_values(array_filter(array_map(function($array) use($filter) {
 	foreach($filter as $value) {
 		if ((int)$array['company_id'] === $value['id']) {
 			return $array;
 		}
 	}
-}, $billingResult['report']);
+}, $billingResult['report'])));
+
+if (!is_array($resultData) || count($resultData) === 0) {
+	echo "При получение отчета произошла ошибка или отчеты найдены";
+	exit();
+}
 
 $sql = "SELECT COUNT(`profile_id`) AS `count`
 		FROM `reports`
@@ -139,9 +142,10 @@ foreach($billingResult['report'] as $result) {
 }
 $db->commit();
 
-$pathScript = escapeshellcmd(sprintf('/usr/bin/python3 %s/backend/report.py', $_SERVER['DOCUMENT_ROOT']));
+$pathScript = sprintf('/usr/bin/python3 %s/backend/report.py %d > /dev/null 2>/dev/null &', $_SERVER['DOCUMENT_ROOT'], $baseStruct['real_id']);
+exec($pathScript);
 
-exec('/usr/bin/python3 /home/monster3d/server/www/dev.loc/backend/report.py 18 > /dev/null 2>/dev/null &');
+#exec('/usr/bin/python3 /home/monster3d/server/www/dev.loc/backend/report.py 18 > /dev/null 2>/dev/null &');
 
 header('Location: ../status.html');
 exit();

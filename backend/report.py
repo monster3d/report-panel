@@ -86,7 +86,7 @@ for xPark in profile['data']:
                 way[i] = reportData[key]['total_cost']
                 resultList[i] = reportData[key]
             i -= 1
-            #time.sleep(0.000001)
+            time.sleep(0.000001)
     
     if way[int(xPark['sum'])] == 0:
         setUpStatus(-1)
@@ -95,7 +95,7 @@ for xPark in profile['data']:
     else:
         i = int(xPark['sum'])
         while i != 0:
-    #        time.sleep(0.000001)
+            time.sleep(0.000001)
             logging.debug("Way: {}".format(way[i]))
             resultList[i]['taxi_park_name'] = xPark['name']
             reportData[:] = [report for report in reportData if int(report.get('order_id')) != int(resultList[i]['order_id'])]
