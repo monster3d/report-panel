@@ -1,83 +1,65 @@
 <?php
 
-require_once "DataBase.php";
 
-$db = new DataBase();
-
-$parser = function() {
-    $result = [
-        'action' => $_GET['action'],
-        'data'   => empty($_GET['data']) ? [] : $_GET['data'],
-        'key'    => ($_GET['key'] === 'null') ? null : $_GET['key']
-    ];
-    unset($_GET);
-    return $result;
-};
-
-$result = $parser();
-
-$response = null;
-$success = false;
-
-switch($result['action']) {
-    case 'get':
-        $response = $db->get($result['key']);
-        $success = true;
-        break;
-    case 'set':
-        $db->set($result['key'], $result['data']);
-        $response = $db->get($result['key']);
-        $success = true;
-        break;
-    case 'delete':
-        //this void
-        break;
-    default:
-        //this void
+if ($_SERVER['REQUEST_METHOD'] !== "GET") {
+    exit();
 }
+
+$action = $_GET['action'];
+
+require_once "../vendor/autoload.php";
+require_once "database.php";
+require_once "functions.php";
+
+
+$response = [];
+switch($action) {
+    case "get":
+        $response = getProfileData($db);
+    break;
+    case "set":
+        setProfilesData($db, $_GET['data']);
+        $response = getProfileData($db);
+}
+
 /**
-$response = [
-    1456 => [
-        'id'   => 1,
-        'name' => 'Yanvar 2017',
-        'data' => [
-            45 => [
-                'name' => 'Taksopark X',
-                'sum'  => 5700,
-                'prec' => 25
-            ],
-            685 => [
-                'name' => 'Test taxi park X',
-                'sum'  => 5000,
-                'prec' => 15
-            ]
-        ]
-    ],
-    85 => [
-        'id'   => 2,
-        'name' => 'May 2017',
-        'data' => [
-            57 => [
-                'name' => 'Test test X',
-                'sum'  => 2500,
-                'prec' => 10
-            ],
-            758 => [
-                'name' => 'Test park X',
-                'sum'  => 7000,
-                'prec' => 15
-            ],
-            99 => [
-                'name' => 'Test mega park X',
-                'sum'  => 90000,
-                'prec' => 10
-            ]
-        ]
-    ]
-];
+* Добовляет информацию о профилях
+* 
+* @param SimpleCrud $db
+* @param array $data
+*
+* @return array
+*
 */
-echo $response;
-//echo json_encode($response, JSON_FORCE_OBJECT);
+function setProfilesData($db, $data)
+{
+    $data = json_decode($data, true);
+    foreach($data as $profile) {
+        $profileID = $profile['id'];
+        if (existsData($db, $profileID)) {
+            updateData($db, json_encode($profile), $profileID);
+        } else {
+            setData($db, json_encode($profile), $profileID);
+        }
+    }
+}
 
+/**
+* Получает данные о профилях
+*
+* @param SimpleCrud $db
+*
+* @return array
+*
+*/
+function getProfileData($db)
+{
+    $data = getData($db);
+    $profileData = array_map(function($array) {
+        return json_decode($array['body'], true);
+    }, $data);
+    return $profileData;
+}
 
-
+header('application/json', true, 200);
+echo json_encode($response);

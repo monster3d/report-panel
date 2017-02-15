@@ -18,7 +18,7 @@ function dbSync(set = false)
 {
     let data = localStorage.getItem('profile_data');
     if (set === false) {
-        let urlRequest = 'database/main.php?action=get&data=null&key=profile_data';
+        let urlRequest = 'database/main.php?action=get&data=null';
         httpEngineDb.open("GET", urlRequest, true);
         httpEngineDb.send();
     } else {
