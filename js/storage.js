@@ -93,6 +93,6 @@ function setDataToStorage(data)
 {
     let string = JSON.stringify(data);
     localStorage.setItem('profile_data', string);
-    dbSync(true);
+    //dbSync(true);
 }
 

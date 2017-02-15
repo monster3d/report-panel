@@ -21,6 +21,7 @@ function addForm(data = null, id = 0)
     let sum  = "";
     let prec = "";
     let formId = 0;
+    let select = document.getElementById('select');
     let current = select.options[select.selectedIndex].id;  
 
     if (current == "new") {
@@ -322,6 +323,7 @@ function saveProfile()
     addNewTaxiCompanyToProfile(current.id, getCheckBox());
     delete Object.parks, Object.park, Object.forms;
     showMessage('Профиль успешно сохранен!');
+    dbSync(true);
 }
 
 /**

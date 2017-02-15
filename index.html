@@ -1,84 +1,28 @@
 <!DOCTYPE html>
 <head>
     <link rel="stylesheet" href="css/style.css" />
-    <script src="js/inc.js"></script>
+    <script src="database/ajax_database.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/main.js"></script>
     <title>Панель отчетов</title>
 </head>
 <body>
-    <form action="report.php" method="POST">
+    <form id="report_form" action="backend/report.php" method="POST">
         <div id="settings"><a href="settings.html"><b>Настройки</b></a></div>
+        <br />
         <div id="profile_list">
-            <label for="select">Профиль</label>
-            <select id="select" onchange="refreshCountPark();">
-                <option name="1">Mart 2016</option>
-                <option name="2">Oprel 2016</option>
-                <option name="3">Iyune 2016</option>
-                <option name="4">Avgust 2016</option>
+            <label for="select">Профиль:</label>
+            <select form="report_form" name="current" id="select" onchange="onEvent();;">
+                <option name="none">Нету</option>
             </select>
         </div>
-        <div class="taxi_company">
-            <h3>Список компаний</h3>
-            <ul id="company_list">
-                <li id="list_1">
-                    <div class="check-box">
-                        <input id="checkbox_1" type="checkbox" name="option2" value="a2" onclick="checkboxEvent(1);" checked="checked">
-                    </div> 
-                    <span>Test company 1</span>
-                </li>
-                <li id="list_2">
-                    <div class="check-box">
-                        <input id="checkbox_2" type="checkbox" name="option2" value="a2" onclick="checkboxEvent(2);" checked="checked">
-                    </div> 
-                    <span>Test company 2</span>
-                </li>
-                <li id="list_3">
-                    <div class="check-box">
-                        <input id="checkbox_3" type="checkbox" name="option2" value="a2" onclick="checkboxEvent(3);" checked="checked">
-                    </div> 
-                    <span>Test company 3</span>
-                </li>
-            </ul>
-        </div>
-        <div class="taxi_parks">
-            <h3>Список таксопарков</h3>
-            <ul id="park_list">
-                <li>
-                    <span>Taxi park test 1</span> 
-                    <span id="park_suma_1" class="park_suma_list">70000 сум.</span>
-                    <span id="park_prec_1" class="park_prec_list">10 %</span>
-                </li>
-                <li>
-                    <span>Taxi park test 2</span> 
-                    <span id="park_suma_2" class="park_suma_list">25000 сум.</span>
-                    <span id="park_prec_2" class="park_prec_list">10 %</span>
-                </li>
-                <li>
-                    <span>Taxi park test 3</span> 
-                    <span id="park_suma_3" class="park_suma_list">50000 сум.</span>
-                    <span id="park_prec_3" class="park_prec_list">15 %</span>
-                </li>
-            </ul>
-
-
-        </div>
         <div class="button">
-           <input class="button_main submit" type="submit" value="Получить"> 
+            <input class="button_main submit" type="submit" value="Получить"> 
         </div>
-        </form>
-        
-        <div class="totla_sum">
-               Сумма:
-               <span id="sum"></span>
-               сум.
-               
-               Парков:
-               <span id="parks"></span>
-               шт.
-               
-               Компаний:
-               <span id="company"></span>
-               шт. 
-                   
-        </div>
-    
-    </body>
+    </form>
+    <div class="totla_sum">
+        Сумма:
+           <span id="sum">0</span>
+        сум.
+    </div>
+</body>
