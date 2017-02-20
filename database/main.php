@@ -1,24 +1,18 @@
 <?php
 
 
-if ($_SERVER['REQUEST_METHOD'] !== "GET") {
-    exit();
-}
-
-$action = $_GET['action'];
-
 require_once "../vendor/autoload.php";
 require_once "database.php";
 require_once "functions.php";
 
 
 $response = [];
-switch($action) {
-    case "get":
+switch($_SERVER['REQUEST_METHOD']) {
+    case "GET":
         $response = getProfileData($db);
     break;
-    case "set":
-        setProfilesData($db, $_GET['data']);
+    case "POST":
+        setProfilesData($db, $_POST['data']);
         $response = getProfileData($db);
 }
 

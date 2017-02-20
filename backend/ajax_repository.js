@@ -13,7 +13,7 @@ httpEngineRepo.onreadystatechange = ()=> {
  */
 function getCompany()
 {
-    let urlRequest = 'backend/repository.php?type=company';
+    let urlRequest = 'backend/repository.php?auth=0b6281a6';
     httpEngineRepo.open("GET", urlRequest, true);
     httpEngineRepo.send();
 }

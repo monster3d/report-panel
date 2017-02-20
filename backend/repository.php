@@ -3,48 +3,54 @@
 include_once "../vendor/autoload.php";
 
 $baseStruct = [
-    'type' => null
+    'auth' => null,
+    'stop' => [
+        'info'  => function($message) {
+            print($message);
+        },
+        'error' => function($message) {
+            die($message);
+        }
+    ]
 ];
+
+$responseData = [];
 
 $config = parse_ini_file(__DIR__ . "/config.ini", true);
 
 $parser = function($baseStruct) use($_GET) {
-    $baseStruct['type'] = $_GET['type'];
+    $baseStruct['auth'] = $_GET['auth'];
     unset($_GET);
     return $baseStruct;
 };
 
 $baseStruct = $parser($baseStruct);
 
-switch($baseStruct['type']) {
-    case "company":
-        $urlRequest = sprintf("%s/v1/corporate-companies/", $config['urls']['core']);
-        $headers = ['Authorization' => $config['core_api']['auth']];
+if ($baseStruct['auth'] !== $config['repository']['auth']) {
+    die("Auth Error");
 }
+
+$urlRequest = sprintf("%s/v1/corporate-companies/?limit=%s", $config['urls']['core'], $config['repository']['limit']);
+$headers = ['Authorization' => $config['core_api']['auth']];
 
 $result = Unirest\Request::get($urlRequest, $headers);
 
-if ($result instanceof \stdClass || $result->code !== 200) {
-	print_r($result);
-}
-
-$data = json_decode($result->raw_body, true);
-
-if ($data['status'] !== 'success') {
-
-}
-
-$pages = $data['data']['pagination'];
-
-if ($pages['total_pages'] > 1) {
-    $i = $pages['page'];
-    $totalResult = [];
-    while ($i < $pages['total_pages']) {
-        $i++;
-        $urlRequest = sprintf("%s?page=%s", $urlRequest, $i);
-        $pageResult = Unirest\Request::get($urlRequest, $headers);
-        $totalResult = array_merge($data['data']['objects'], json_decode($pageResult->raw_body, true)['data']['objects']);
+$validatior = function($result) use($baseStruct) {
+    if (!is_object($result)) {
+        $baseStruct['stop']['error']("Ошибка получения данных");
     }
-}
+    if ($result->code !== 200) {
+        $baseStruct['stop']['error'](sprintf("Сервис вернул результат, Код ответа: %s", $result->code));
+    }
 
-echo json_encode($totalResult);
+    $result = json_decode($result->raw_body, true);
+
+    if ($result['status'] !== 'success') {
+        $baseStruct['stop']['error']("Ответ от сервиса содержить ошибку");
+    }
+    return $result;
+};
+
+$result = $validatior($result);
+
+echo json_encode($result['data']['objects']);

@@ -18,13 +18,14 @@ function dbSync(set = false)
 {
     let data = localStorage.getItem('profile_data');
     if (set === false) {
-        let urlRequest = 'database/main.php?action=get&data=null';
+        let urlRequest = 'database/main.php';
         httpEngineDb.open("GET", urlRequest, true);
         httpEngineDb.send();
     } else {
-        let urlRequest = `database/main.php?action=set&data=${data}&key=profile_data`;
-        httpEngineDb.open("GET", urlRequest, true);
-        httpEngineDb.send();
+        let urlRequest = 'database/main.php';
+        httpEngineDb.open("POST", urlRequest, true);
+        httpEngineDb.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        httpEngineDb.send(`data=${data}`);
     }
 }
 

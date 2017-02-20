@@ -33,18 +33,60 @@ try {
 $profileCursore = $stmt->fetch(PDO::FETCH_ASSOC);
 $profileData = json_decode($profileCursore['body'], true);
 
-$dateFormat = function(&$profileData) {
+$dataFormat = function(&$profileData) {
 	$prepareDate = [
 		'from' => sprintf("%s-01 00:00:00", $profileData['from']),
-		'to'   => sprintf("%s-01 00:00:00", $profileData['to'])
+		'to'   => sprintf("%s-01 00:00:00", $profileData['to']),
+		'skip' => 0
 	];
 	return $prepareDate;
 };
 
-$date = $dateFormat($profileData);
+$data = $dataFormat($profileData);
 
-$urlRequest = sprintf("%s/reportcorporateorders/%s/%s/%s/%s", 
-	$config['urls']['billing'], $date['from'], $date['to'], $config['main']['limit'], 0);
+$urlGenerator = function($data) use($config) {
+	$urlRequest = sprintf("%s/reportcorporateorders/%s/%s/%s/%s", 
+	$config['urls']['billing'], $data['from'], $data['to'], $config['report']['limit'], $data['skip']);
+	return $urlRequest;
+};
+
+$validatior = function($result) use($baseStruct) {
+    if (!is_object($result)) {
+		die();
+    }
+    if ($result->code !== 200) {
+		die();
+    }
+
+    $result = json_decode($result->raw_body, true);
+
+	if ((bool)$result['success'] !== true) {
+        $baseStruct['stop']['error']("Ответ от сервиса содержить ошибку");
+    }
+    return $result;
+};
+
+
+
+$url = $urlGenerator($data);
+
+//$request = function() use($config, $url) {
+	$result = [];
+	while(true) {
+		/** @todo  Доделать тут все !*/
+		$serviceResult = Unirest\Request::get($url);
+		$serviceResult = $validatior($serviceResult);
+		$reports = $serviceResult['report'];
+		$reportCount = count($reports);
+		if ((int)$reportCount < (int)$config['report']['limit']) {
+			$result = array_merge([], $reports);
+			break;
+		}
+	}
+	//return $result;
+//};
+
+
 
 $serviceResult = Unirest\Request::get($urlRequest);
 
@@ -142,10 +184,8 @@ foreach($billingResult['report'] as $result) {
 }
 $db->commit();
 
-$pathScript = sprintf('/usr/bin/python3 %s/backend/report.py %d > /dev/null 2>/dev/null &', $_SERVER['DOCUMENT_ROOT'], $baseStruct['real_id']);
-exec($pathScript);
-
-#exec('/usr/bin/python3 /home/monster3d/server/www/dev.loc/backend/report.py 18 > /dev/null 2>/dev/null &');
+$pathScript = sprintf('/usr/bin/python3 %s/report.py %d > /dev/null 2>/dev/null &', __DIR__, $baseStruct['real_id']);
+//exec($pathScript);
 
 header('Location: ../status.html');
 exit();
